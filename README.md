@@ -9,7 +9,7 @@
 ### 1️⃣ Descarga el Sistema
 ```bash
 # Opción A: GitHub (recomendado)
-git clone https://github.com/TU_USUARIO/claude-code-reglas.git
+git clone https://github.com/ivankorzy25/claude-code-reglas.git
 
 # Opción B: Descarga manual
 # Ve a GitHub y descarga ZIP
@@ -213,7 +213,7 @@ Claude ahora trabaja con:
 
 1. **Clona desde GitHub:**
    ```bash
-   git clone https://github.com/TU_USUARIO/claude-code-reglas.git
+   git clone https://github.com/ivankorzy25/claude-code-reglas.git
    ```
 
 2. **O descarga ZIP:**
@@ -380,7 +380,7 @@ Puedes:
 
 ## 🙏 Créditos
 
-**Creado por:** Ivan
+**Creado por:** Ivan (ivankorzy25)
 **Asistido por:** Claude Code
 **Versión:** 10.0 ULTIMATE
 **Fecha:** 2025-10-05
@@ -411,7 +411,7 @@ Si este sistema te ayuda a crear proyectos increíbles:
 
 ```bash
 # 1. Clona el sistema
-git clone https://github.com/TU_USUARIO/claude-code-reglas.git
+git clone https://github.com/ivankorzy25/claude-code-reglas.git
 
 # 2. Entra a la carpeta
 cd claude-code-reglas
