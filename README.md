@@ -4,33 +4,43 @@
 
 ---
 
-## ⚡ Quick Start (5 minutos)
+## ⚡ Quick Start (1 minuto)
 
-### 1️⃣ Descarga el Sistema
+### Instalacion Automatica (Recomendado)
+
 ```bash
-# Opción A: GitHub (recomendado)
-git clone https://github.com/ivankorzy25/claude-code-reglas.git
-
-# Opción B: Descarga manual
-# Ve a GitHub y descarga ZIP
+curl -sL https://raw.githubusercontent.com/ivankorzy25/claude-code-reglas/main/install.sh | bash
 ```
 
-### 2️⃣ Úsalo en tu Proyecto
-```bash
-# Copia el archivo principal a tu proyecto
-cp SISTEMA_COMPLETO_V10_ULTIMATE.md /ruta/a/tu/proyecto/
+Esto instalara las reglas globalmente y se aplicaran automaticamente a TODOS tus proyectos.
 
-# Abre tu proyecto con Claude Code
-# Claude leerá automáticamente las reglas
+### Instalacion Manual
+
+```bash
+# 1. Crear directorios
+mkdir -p ~/claude-code-global/{0000_templates,0002_hooks_automaticos,0003_colaboracion,0004_experiments,0005_knowledge_base}
+
+# 2. Descargar archivos
+cd ~/claude-code-global
+curl -sL https://raw.githubusercontent.com/ivankorzy25/claude-code-reglas/main/SISTEMA_COMPLETO_V10_ULTIMATE.md -o SISTEMA_COMPLETO_V10_ULTIMATE.md
+
+# 3. Configurar Claude Code
+mkdir -p ~/.claude
+cp SISTEMA_COMPLETO_V10_ULTIMATE.md ~/.claude/
+curl -sL https://raw.githubusercontent.com/ivankorzy25/claude-code-reglas/main/config/CLAUDE.md -o ~/.claude/CLAUDE.md
+curl -sL https://raw.githubusercontent.com/ivankorzy25/claude-code-reglas/main/config/settings.json -o ~/.claude/settings.json
 ```
 
-### 3️⃣ ¡Listo!
+Ver guia completa: [INSTALACION.md](INSTALACION.md)
+
+### ✅ ¡Listo!
 Claude ahora trabaja con:
-- ✅ Autonomía total (sin interrupciones)
+- ✅ Autonomia total (sin interrupciones)
 - ✅ Multi-agente inteligente
 - ✅ IA sobre scripts (mejores resultados)
-- ✅ Evaluación de viabilidad
-- ✅ Comunicación clara (no-técnica)
+- ✅ Evaluacion de viabilidad
+- ✅ Comunicacion clara (no-tecnica)
+- ✅ Se aplica automaticamente en TODOS tus proyectos
 
 ---
 
@@ -38,6 +48,7 @@ Claude ahora trabaja con:
 
 | Archivo | Descripción | Cuándo Usar |
 |---------|-------------|-------------|
+| **[INSTALACION.md](INSTALACION.md)** | 🔧 Guia de instalacion completa | Primera vez |
 | **[INDICE_GENERAL.md](INDICE_GENERAL.md)** | 📍 Mapa completo del sistema | Para navegar |
 | **[SISTEMA_COMPLETO_V10_ULTIMATE.md](SISTEMA_COMPLETO_V10_ULTIMATE.md)** | 🚀 106 reglas completas | Siempre al inicio |
 | **[GUIA_PORTABILIDAD_Y_BACKUP.md](GUIA_PORTABILIDAD_Y_BACKUP.md)** | 💾 Cómo llevar a cualquier PC | Setup en PC nueva |

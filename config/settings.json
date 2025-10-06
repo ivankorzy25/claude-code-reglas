@@ -1,0 +1,9 @@
+{
+  "env": {
+    "CLAUDE_RULES_PATH": "~/.claude/SISTEMA_COMPLETO_V10_ULTIMATE.md",
+    "CLAUDE_GLOBAL_CONFIG": "~/claude-code-global",
+    "CLAUDE_TEMPLATES_PATH": "~/claude-code-global/0000_templates",
+    "CLAUDE_HOOKS_PATH": "~/claude-code-global/0002_hooks_automaticos",
+    "CLAUDE_KB_PATH": "~/claude-code-global/0005_knowledge_base"
+  }
+}
