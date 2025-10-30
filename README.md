@@ -53,6 +53,55 @@ Claude ahora trabaja con:
 | **[SISTEMA_COMPLETO_V10_ULTIMATE.md](SISTEMA_COMPLETO_V10_ULTIMATE.md)** | 🚀 106 reglas completas | Siempre al inicio |
 | **[GUIA_PORTABILIDAD_Y_BACKUP.md](GUIA_PORTABILIDAD_Y_BACKUP.md)** | 💾 Cómo llevar a cualquier PC | Setup en PC nueva |
 | **[RESUMEN_MEJORAS_FINALES.md](RESUMEN_MEJORAS_FINALES.md)** | 📊 Resumen ejecutivo | Para entender rápido |
+| **[GENERADOR_REGLAS.md](GENERADOR_REGLAS.md)** | 🤖 Generador automático de reglas | Para crear nuevas reglas |
+
+---
+
+## 🤖 NUEVO: Generador Automático de Reglas
+
+¡Ahora puedes crear tus propias reglas automáticamente!
+
+### ⚡ Quick Start del Generador
+
+```bash
+# Modo interactivo (más fácil)
+python3 generador_reglas.py -i
+
+# Crear regla con un prompt
+python3 generador_reglas.py -p "Implementar autenticación OAuth2"
+
+# Crear regla con categoría específica
+python3 generador_reglas.py -p "Optimizar consultas SQL" -c performance
+```
+
+### 🎯 Características del Generador
+
+- **🧠 IA Inteligente:** Describe tu regla y la IA genera todo automáticamente
+- **📝 16 Categorías:** Seguridad, Performance, Testing, DevOps, y más
+- **🎨 Plantillas:** Estructura profesional y consistente
+- **💾 Exportación:** Markdown y JSON
+- **⚡ CLI Interactivo:** Fácil de usar
+
+### 📖 Documentación Completa
+
+Ver **[GENERADOR_REGLAS.md](GENERADOR_REGLAS.md)** para:
+- Guía completa de uso
+- Ejemplos paso a paso
+- Todas las categorías disponibles
+- Tips y mejores prácticas
+
+### 🎬 Ejemplo Rápido
+
+```bash
+# 1. Ejecutar ejemplos incluidos
+./ejemplos_generador.sh
+
+# 2. Ver reglas generadas
+cat EJEMPLOS_COMPLETOS.md
+
+# 3. Crear tus propias reglas
+python3 generador_reglas.py -i
+```
 
 ---
 
@@ -115,7 +164,13 @@ Claude ahora trabaja con:
 │   ├── INDICE_GENERAL.md
 │   ├── SISTEMA_COMPLETO_V10_ULTIMATE.md ⭐
 │   ├── GUIA_PORTABILIDAD_Y_BACKUP.md
-│   └── RESUMEN_MEJORAS_FINALES.md
+│   ├── RESUMEN_MEJORAS_FINALES.md
+│   └── GENERADOR_REGLAS.md 🤖 (NUEVO)
+│
+├── 🤖 Generador de Reglas (NUEVO)
+│   ├── generador_reglas.py
+│   ├── ejemplos_generador.sh
+│   └── generador/README.md
 │
 ├── 🎨 0000_templates/
 │   ├── tema_webapp_frontend/
