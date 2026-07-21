@@ -1,11 +1,16 @@
 #!/usr/bin/env bash
 # Despliega el MCP de Firebase (control total) en Cloud Run, protegido con un
 # token secreto, y deja lista la URL para agregarla como Custom Connector en
-# claude.ai.
+# claude.ai. La service account que crea este script recibe control total
+# (editor + admin de Firebase/Auth) sobre TODOS los proyectos de GCP a los
+# que tiene acceso la cuenta logueada, no solo uno. Los proyectos nuevos que
+# el MCP cree en el futuro (tiene una herramienta "create_project") quedan
+# controlados automaticamente, porque quien crea un proyecto en GCP pasa a
+# ser su dueno.
 #
 # Uso:
-#   ./deploy.sh                  -> detecta el proyecto activo de gcloud y pide confirmacion
-#   ./deploy.sh MI_PROJECT_ID    -> usa ese proyecto sin preguntar
+#   ./deploy.sh                  -> detecta el proyecto donde correr Cloud Run y pide confirmacion
+#   ./deploy.sh MI_PROJECT_ID    -> usa ese proyecto como "host" sin preguntar
 #   REGION=southamerica-east1 ./deploy.sh   -> cambia la region (default: us-central1)
 #
 # Si corres esto en Google Cloud Shell (https://shell.cloud.google.com) ya
@@ -29,26 +34,26 @@ fi
 
 DETECTED_PROJECT="$(gcloud config get-value project 2>/dev/null || true)"
 if [ -n "${1:-}" ]; then
-  GCP_PROJECT_ID="$1"
+  HOST_PROJECT_ID="$1"
 elif [ -n "$DETECTED_PROJECT" ]; then
-  read -rp "==> Voy a usar el proyecto '${DETECTED_PROJECT}' (Enter para confirmar, o escribi otro Project ID): " INPUT_PROJECT
-  GCP_PROJECT_ID="${INPUT_PROJECT:-$DETECTED_PROJECT}"
+  read -rp "==> El servidor va a vivir en el proyecto '${DETECTED_PROJECT}' (Enter para confirmar, o escribi otro Project ID): " INPUT_PROJECT
+  HOST_PROJECT_ID="${INPUT_PROJECT:-$DETECTED_PROJECT}"
 else
-  read -rp "==> Project ID de tu proyecto de Firebase (lo ves en console.firebase.google.com > Configuracion): " GCP_PROJECT_ID
+  read -rp "==> Project ID donde desplegar el servidor: " HOST_PROJECT_ID
 fi
 
-if [ -z "${GCP_PROJECT_ID:-}" ]; then
+if [ -z "${HOST_PROJECT_ID:-}" ]; then
   echo "No diste ningun Project ID. Corre: ./deploy.sh TU_PROJECT_ID" >&2
   exit 1
 fi
 
-SA_EMAIL="${SA_NAME}@${GCP_PROJECT_ID}.iam.gserviceaccount.com"
+SA_EMAIL="${SA_NAME}@${HOST_PROJECT_ID}.iam.gserviceaccount.com"
 KEY_FILE="$(mktemp -d)/sa-key.json"
 
-echo "==> Usando proyecto: ${GCP_PROJECT_ID}"
-gcloud config set project "${GCP_PROJECT_ID}" >/dev/null
+echo "==> El servidor va a correr en: ${HOST_PROJECT_ID}"
+gcloud config set project "${HOST_PROJECT_ID}" >/dev/null
 
-echo "==> Habilitando APIs necesarias..."
+echo "==> Habilitando APIs necesarias en ${HOST_PROJECT_ID}..."
 gcloud services enable \
   run.googleapis.com \
   cloudbuild.googleapis.com \
@@ -56,20 +61,25 @@ gcloud services enable \
   secretmanager.googleapis.com \
   iam.googleapis.com >/dev/null
 
-echo "==> Creando (o reutilizando) service account con control total sobre Firebase..."
+echo "==> Creando (o reutilizando) service account con control total..."
 gcloud iam service-accounts create "${SA_NAME}" \
   --display-name="MCP Firebase - control total (claude.ai)" 2>/dev/null || true
 
+echo "==> Dando control total sobre TODOS tus proyectos de GCP a la service account..."
 # roles/editor: lectura/escritura sobre Firestore, Realtime Database, Storage,
 #   Functions, Remote Config, etc.
 # roles/firebase.admin: permisos especificos de Firebase (Remote Config,
 #   Crashlytics, App Hosting, gestion del proyecto Firebase).
 # roles/firebaseauth.admin: gestion completa de usuarios de Firebase Auth.
-for role in roles/editor roles/firebase.admin roles/firebaseauth.admin; do
-  gcloud projects add-iam-policy-binding "${GCP_PROJECT_ID}" \
-    --member="serviceAccount:${SA_EMAIL}" \
-    --role="${role}" \
-    --condition=None >/dev/null
+ALL_PROJECTS="$(gcloud projects list --format='value(projectId)')"
+for p in $ALL_PROJECTS; do
+  echo "   - ${p}"
+  for role in roles/editor roles/firebase.admin roles/firebaseauth.admin; do
+    gcloud projects add-iam-policy-binding "${p}" \
+      --member="serviceAccount:${SA_EMAIL}" \
+      --role="${role}" \
+      --condition=None >/dev/null 2>&1 || echo "     (aviso: no pude aplicar ${role} en ${p}, sigo con el resto)"
+  done
 done
 
 echo "==> Generando clave de la service account (temporal, se borra al final)..."
@@ -104,7 +114,7 @@ gcloud run deploy "${SERVICE_NAME}" \
   --max-instances=2 \
   --memory=512Mi \
   --timeout=3600 \
-  --set-env-vars "FIREBASE_PROJECT_ID=${GCP_PROJECT_ID}" \
+  --set-env-vars "FIREBASE_PROJECT_ID=${HOST_PROJECT_ID}" \
   --set-secrets "MCP_AUTH_TOKEN=mcp-firebase-auth-token:latest,FIREBASE_SERVICE_ACCOUNT_JSON=mcp-firebase-sa-json:latest"
 
 SERVICE_URL="$(gcloud run services describe "${SERVICE_NAME}" --region "${REGION}" --format='value(status.url)')"
@@ -119,5 +129,10 @@ Listo. Guarda estos datos, los vas a necesitar en claude.ai:
 
 El token NO vuelve a mostrarse. Si lo perdes, corre este script
 de nuevo (regenera el secreto y actualiza el servicio).
+
+Tiene control total sobre todos tus proyectos actuales de GCP/Firebase.
+Para trabajar con uno en particular, en el chat de claude.ai decile
+a Claude el nombre del proyecto (ej: "usa el proyecto biblia-kor") y
+va a cambiar solo. Tambien puede crear proyectos nuevos si se lo pedis.
 ==============================================================
 EOF

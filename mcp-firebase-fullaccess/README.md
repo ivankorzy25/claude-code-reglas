@@ -3,16 +3,21 @@
 Este proyecto expone el **servidor MCP oficial de Firebase** (el que trae
 `firebase-tools`, mantenido por Google) como un **conector remoto** que podés
 agregar en claude.ai (la web), con acceso de lectura, escritura y borrado
-sobre tu proyecto de Firebase: Firestore, Realtime Database, Authentication,
-Storage, Remote Config, Cloud Functions (logs), Crashlytics, Data Connect,
-App Hosting, Cloud Messaging.
+sobre **todos tus proyectos de Firebase/GCP** (no uno solo): Firestore,
+Realtime Database, Authentication, Storage, Remote Config, Cloud Functions
+(logs), Crashlytics, Data Connect, App Hosting, Cloud Messaging — y también
+puede **listar, crear y cambiar de proyecto** durante la conversación
+(`list_projects`, `create_project`, `update_environment` son herramientas
+del propio servidor de Firebase). Los proyectos nuevos que Claude cree
+quedan bajo su control automáticamente, porque en GCP quien crea un
+proyecto pasa a ser su dueño.
 
 ## ⚠️ Antes de arrancar, entendé el riesgo
 
-- El token que vas a generar equivale a una **contraseña maestra** de tu
-  proyecto de Firebase: quien lo tenga puede leer, modificar y **borrar**
-  datos reales (usuarios, documentos de Firestore, archivos de Storage,
-  etc.) a través de Claude.
+- El token que vas a generar equivale a una **contraseña maestra de toda tu
+  cuenta de Google Cloud/Firebase**: quien lo tenga puede leer, modificar,
+  **borrar** y hasta **crear proyectos nuevos** en cualquiera de tus
+  proyectos, no solo en uno.
 - No compartas la URL del servicio ni el token. No los pegues en chats,
   issues públicos ni los subas a un repo.
 - Si el token se filtra, corré `deploy.sh` de nuevo para rotarlo (o borrá el
@@ -53,18 +58,16 @@ claude.ai  ──HTTPS + Authorization: Bearer <token>──▶  Cloud Run
 
 ## Requisitos previos
 
-1. Tu proyecto en <https://console.firebase.google.com> (anotá el **Project
-   ID**, no el nombre visible — está en ⚙️ Configuración del proyecto).
-2. Facturación habilitada en el proyecto de Google Cloud asociado (Cloud Run
-   tiene capa gratuita amplia; para uso personal normalmente no vas a pagar
-   nada, pero GCP lo exige para habilitar Cloud Run).
+1. Una cuenta de Google con acceso a <https://console.firebase.google.com>
+   y a los proyectos de GCP que querés controlar.
+2. Facturación habilitada en el proyecto de Google Cloud donde va a vivir el
+   servidor (Cloud Run tiene capa gratuita amplia; para uso personal
+   normalmente no vas a pagar nada, pero GCP lo exige para habilitarlo).
 3. [`gcloud` CLI](https://cloud.google.com/sdk/docs/install) instalado y
-   logueado con tu cuenta de Google (la misma con acceso a Firebase):
-   ```bash
-   gcloud auth login
-   ```
-4. Tener `openssl` disponible (viene por defecto en Mac/Linux; en Windows
-   usá WSL o Git Bash).
+   logueado con tu cuenta de Google — o, más fácil, usar Google Cloud Shell
+   (ver Paso 1), que ya viene con todo instalado y logueado.
+4. Tener `openssl` disponible (viene por defecto en Mac/Linux/Cloud Shell;
+   en Windows usá WSL o Git Bash).
 
 ## Paso 1: Correr el despliegue (la forma más fácil: Google Cloud Shell)
 
@@ -92,10 +95,11 @@ CLI](https://cloud.google.com/sdk/docs/install), logueate con
 
 El script:
 
-1. Crea una **service account** dedicada (`mcp-firebase-fullaccess-sa`) con
-   los roles `roles/editor`, `roles/firebase.admin` y
-   `roles/firebaseauth.admin` sobre tu proyecto (esto es lo que le da
-   "control total").
+1. Crea una **service account** dedicada (`mcp-firebase-fullaccess-sa`) y le
+   da los roles `roles/editor`, `roles/firebase.admin` y
+   `roles/firebaseauth.admin` en **todos los proyectos de GCP** a los que
+   tiene acceso tu cuenta (esto es lo que le da "control total"). Los
+   proyectos que se creen después quedan controlados automáticamente.
 2. Genera un **token aleatorio** de 256 bits para proteger el endpoint.
 3. Guarda la clave de la service account y el token en **Secret Manager**
    (nunca quedan en texto plano en tu disco ni en el repo).
