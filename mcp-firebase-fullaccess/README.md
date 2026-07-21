@@ -66,21 +66,29 @@ claude.ai  ──HTTPS + Authorization: Bearer <token>──▶  Cloud Run
 4. Tener `openssl` disponible (viene por defecto en Mac/Linux; en Windows
    usá WSL o Git Bash).
 
-## Paso 1: Configurar y correr el despliegue
+## Paso 1: Correr el despliegue (la forma más fácil: Google Cloud Shell)
 
-Editá las primeras líneas de [`deploy.sh`](./deploy.sh):
+No hace falta instalar nada en tu compu. Cloud Shell ya viene con `gcloud`
+instalado y logueado con tu cuenta de Google.
 
-```bash
-GCP_PROJECT_ID="tu-project-id-de-firebase"   # el Project ID real
-REGION="us-central1"                          # o la región que prefieras
-```
+1. Abrí <https://shell.cloud.google.com> (con la misma cuenta de Google que
+   usás en Firebase).
+2. Pegá este bloque y presioná Enter:
 
-Después corré:
+   ```bash
+   git clone https://github.com/ivankorzy25/claude-code-reglas.git && \
+   cd claude-code-reglas/mcp-firebase-fullaccess && \
+   ./deploy.sh
+   ```
+3. El script te va a mostrar el Project ID que detectó y te pide Enter para
+   confirmar (o podés escribir otro). Después no tenés que tocar nada más:
+   crea todo solo y al final te muestra la URL y el token que necesitás para
+   el Paso 3.
 
-```bash
-cd mcp-firebase-fullaccess
-./deploy.sh
-```
+¿Preferís tu propia terminal en vez de Cloud Shell? Instalá el [`gcloud`
+CLI](https://cloud.google.com/sdk/docs/install), logueate con
+`gcloud auth login`, cloná este repo y corré `./deploy.sh` igual (opcionalmente
+`./deploy.sh TU_PROJECT_ID` para saltear la confirmación).
 
 El script:
 

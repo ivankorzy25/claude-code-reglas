@@ -1,18 +1,46 @@
 #!/usr/bin/env bash
 # Despliega el MCP de Firebase (control total) en Cloud Run, protegido con un
 # token secreto, y deja lista la URL para agregarla como Custom Connector en
-# claude.ai. Requiere: gcloud CLI instalado y logueado (gcloud auth login)
-# con una cuenta que tenga permisos de IAM/Owner sobre el proyecto de GCP
-# asociado a tu proyecto de Firebase.
+# claude.ai.
+#
+# Uso:
+#   ./deploy.sh                  -> detecta el proyecto activo de gcloud y pide confirmacion
+#   ./deploy.sh MI_PROJECT_ID    -> usa ese proyecto sin preguntar
+#   REGION=southamerica-east1 ./deploy.sh   -> cambia la region (default: us-central1)
+#
+# Si corres esto en Google Cloud Shell (https://shell.cloud.google.com) ya
+# tenes gcloud instalado y logueado con tu cuenta de Google, no hace falta
+# instalar nada mas.
 set -euo pipefail
 
-# ============ CONFIGURA ESTAS VARIABLES ANTES DE CORRER EL SCRIPT ============
-GCP_PROJECT_ID="tu-project-id-de-firebase"   # el mismo Project ID que ves en
-                                              # console.firebase.google.com > Configuracion del proyecto
-REGION="us-central1"
+REGION="${REGION:-us-central1}"
 SERVICE_NAME="mcp-firebase-fullaccess"
 SA_NAME="mcp-firebase-fullaccess-sa"
-# ==============================================================================
+
+if ! command -v gcloud >/dev/null 2>&1; then
+  echo "No se encontro 'gcloud'. Lo mas facil: corre este script desde https://shell.cloud.google.com" >&2
+  exit 1
+fi
+
+if ! gcloud auth list --filter=status:ACTIVE --format="value(account)" 2>/dev/null | grep -q .; then
+  echo "==> Necesito que inicies sesion con tu cuenta de Google..."
+  gcloud auth login
+fi
+
+DETECTED_PROJECT="$(gcloud config get-value project 2>/dev/null || true)"
+if [ -n "${1:-}" ]; then
+  GCP_PROJECT_ID="$1"
+elif [ -n "$DETECTED_PROJECT" ]; then
+  read -rp "==> Voy a usar el proyecto '${DETECTED_PROJECT}' (Enter para confirmar, o escribi otro Project ID): " INPUT_PROJECT
+  GCP_PROJECT_ID="${INPUT_PROJECT:-$DETECTED_PROJECT}"
+else
+  read -rp "==> Project ID de tu proyecto de Firebase (lo ves en console.firebase.google.com > Configuracion): " GCP_PROJECT_ID
+fi
+
+if [ -z "${GCP_PROJECT_ID:-}" ]; then
+  echo "No diste ningun Project ID. Corre: ./deploy.sh TU_PROJECT_ID" >&2
+  exit 1
+fi
 
 SA_EMAIL="${SA_NAME}@${GCP_PROJECT_ID}.iam.gserviceaccount.com"
 KEY_FILE="$(mktemp -d)/sa-key.json"
