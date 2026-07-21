@@ -1,0 +1,8 @@
+node_modules
+npm-debug.log
+*.md
+.env
+.env.*
+sa-key.json
+*.json.key
+.git

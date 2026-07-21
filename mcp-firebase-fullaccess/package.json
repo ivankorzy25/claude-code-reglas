@@ -1,0 +1,14 @@
+{
+  "name": "mcp-firebase-fullaccess",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Proxy con autenticacion que expone el servidor MCP oficial de Firebase (firebase-tools) como conector remoto para claude.ai",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.19.2",
+    "http-proxy-middleware": "^2.0.6"
+  }
+}
