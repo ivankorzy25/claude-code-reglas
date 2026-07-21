@@ -84,6 +84,10 @@ Claude ahora trabaja con:
 - Model Context Protocol
 - APIs y recursos externos
 - Caché y optimización
+- MCP de Firebase incluido: el instalador (`install.sh`) registra el
+  servidor MCP oficial de Firebase para Claude Code automáticamente
+  (gratis, sin tarjeta). Solo hace falta correr `firebase login` una vez
+  con tu cuenta de Google para activarlo.
 
 #### 🔷 Viabilidad y Pragmatismo (71-83)
 - Evaluación de proyectos
